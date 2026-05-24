@@ -1,11 +1,7 @@
 import Link from "next/link";
-import { ExternalLink, GitBranch } from "lucide-react";
 
-import { BrandMark } from "@/components/brand-mark";
 import { PublicSketchViewer } from "@/components/public-sketch-viewer";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { SketchScene } from "@/lib/api";
 
 type PublicProject = {
@@ -53,7 +49,7 @@ async function readPublicSketch(owner: string, repo: string, projectId: string, 
 	return readPublicJson<SketchScene>(owner, repo, sketchPath);
 }
 
-export default async function ShareProjectPage({
+export default async function EmbedProjectPage({
 	params,
 }: {
 	params: Promise<{ owner: string; repo: string; projectId: string }>;
@@ -61,46 +57,27 @@ export default async function ShareProjectPage({
 	const { owner, repo, projectId } = await params;
 	const project = await readPublicProject(owner, repo, projectId).catch(() => null);
 	const scene = await readPublicSketch(owner, repo, projectId, project).catch(() => null);
-	const title = project?.title || projectId;
 
 	return (
-		<main className="min-h-screen bg-background px-5 py-10">
-			<div className="mx-auto max-w-5xl">
-				<div className="mb-6 flex items-center justify-between gap-3">
-					<BrandMark />
+		<main className="min-h-screen bg-background p-4">
+			<div className="flex h-full min-h-[520px] flex-col rounded-xl border bg-card p-4">
+				<div className="mb-4 flex items-center justify-between gap-3">
+					<div>
+						<div className="text-sm font-semibold">{project?.title || projectId}</div>
+						<div className="text-xs text-muted-foreground">
+							{owner}/{repo}
+						</div>
+					</div>
 					<Badge variant="secondary" className="font-normal">
-						Public project
+						Sketchflow
 					</Badge>
 				</div>
-
-				<Card>
-					<CardHeader>
-						<CardTitle className="text-2xl">{title}</CardTitle>
-					</CardHeader>
-					<CardContent className="space-y-4">
-						<p className="text-sm text-muted-foreground">
-							This project is served from the owner&apos;s GitHub workspace repo.
-						</p>
-						<div className="rounded-lg border bg-muted/20 p-3 font-mono text-xs text-muted-foreground">
-							{owner}/{repo}/projects/{projectId}
-						</div>
-						<PublicSketchViewer scene={scene} />
-						<div className="flex flex-wrap gap-2">
-							<Button asChild>
-								<Link href={`https://github.com/${owner}/${repo}/tree/main/projects/${projectId}`} target="_blank">
-									<GitBranch className="size-4" />
-									View source
-								</Link>
-							</Button>
-							<Button variant="outline" asChild>
-								<Link href={`/embed/${owner}/${repo}/${projectId}`} target="_blank">
-									<ExternalLink className="size-4" />
-									Embed view
-								</Link>
-							</Button>
-						</div>
-					</CardContent>
-				</Card>
+				<div className="min-h-0 flex-1">
+					<PublicSketchViewer scene={scene} />
+				</div>
+				<Link className="mt-3 inline-flex text-xs text-primary" href={`/share/${owner}/${repo}/${projectId}`} target="_blank">
+					Open share page
+				</Link>
 			</div>
 		</main>
 	);
