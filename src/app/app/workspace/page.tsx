@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 
-import { ProjectsHomeClient } from "@/components/projects-home-client";
+import { DashboardClient } from "@/components/dashboard-client";
 
-export default function AppPage() {
+export default function WorkspacePage() {
 	return (
 		<Suspense fallback={<div className="min-h-screen bg-background" />}>
-			<ProjectsHomeClient />
+			<DashboardClient />
 		</Suspense>
 	);
 }
